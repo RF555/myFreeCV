@@ -196,8 +196,36 @@ function buildTimelineItem(years, primary, secondary, description, bullets) {
   return children;
 }
 
+function buildReferenceItem(ref) {
+  const children = [];
+  children.push(ltrParagraph({
+    spacing: { before: 80, after: 20 },
+    children: [new TextRun({ text: ref.name || "", font: "Calibri", size: 20, bold: true, color: "1E293B" })],
+  }));
+  const subtitle = [ref.title, ref.organization].filter(Boolean).join(", ");
+  if (subtitle) {
+    children.push(ltrParagraph({
+      spacing: { after: 10 },
+      children: [new TextRun({ text: subtitle, font: "Calibri", size: 17, color: "4B5563" })],
+    }));
+  }
+  if (ref.phone) {
+    children.push(ltrParagraph({
+      spacing: { after: 10 },
+      children: [new TextRun({ text: ref.phone, font: "Calibri", size: 17, color: "6B7280" })],
+    }));
+  }
+  if (ref.email) {
+    children.push(ltrParagraph({
+      spacing: { after: 10 },
+      children: [new TextRun({ text: ref.email, font: "Calibri", size: 17, color: "6B7280" })],
+    }));
+  }
+  return children;
+}
+
 function buildMainContent(cv) {
-  const { summary, experience, education, workHistory, customSections, sectionOrder } = cv;
+  const { summary, experience, education, workHistory, references, customSections, sectionOrder } = cv;
   const children = [];
 
   if (summary) {
@@ -230,6 +258,14 @@ function buildMainContent(cv) {
           children.push(mainHeading("Work History"));
           for (const job of workHistory) {
             children.push(...buildTimelineItem(job.years, job.title, job.organization, job.description, job.bullets));
+          }
+        }
+        break;
+      case "references":
+        if (references?.length > 0) {
+          children.push(mainHeading("References"));
+          for (const ref of references) {
+            children.push(...buildReferenceItem(ref));
           }
         }
         break;

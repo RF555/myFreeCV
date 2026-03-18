@@ -7,6 +7,7 @@ import SkillsSection from "../components/cv/SkillsSection";
 import ExperienceSection from "../components/cv/ExperienceSection";
 import EducationSection from "../components/cv/EducationSection";
 import WorkHistorySection from "../components/cv/WorkHistorySection";
+import ReferencesSection from "../components/cv/ReferencesSection";
 import LanguagesSection from "../components/cv/LanguagesSection";
 import CustomSection from "../components/cv/CustomSection";
 import { Button } from "@/components/ui/button";
@@ -20,6 +21,7 @@ const DEFAULT_SECTIONS = [
   { id: "experience", type: "experience" },
   { id: "education", type: "education" },
   { id: "workHistory", type: "workHistory" },
+  { id: "references", type: "references" },
 ];
 
 const defaultCV = {
@@ -30,6 +32,7 @@ const defaultCV = {
   experience: [],
   education: [],
   workHistory: [],
+  references: [],
   customSections: {},
   sectionOrder: DEFAULT_SECTIONS,
 };
@@ -50,6 +53,12 @@ function loadCV() {
       ].filter(Boolean);
     }
     if (!parsed.sectionOrder) parsed.sectionOrder = DEFAULT_SECTIONS;
+    // migrate: ensure all built-in sections exist in sectionOrder
+    for (const section of DEFAULT_SECTIONS) {
+      if (!parsed.sectionOrder.some((s) => s.id === section.id)) {
+        parsed.sectionOrder.push(section);
+      }
+    }
     if (!parsed.customSections) parsed.customSections = {};
     return parsed;
   } catch {
@@ -123,6 +132,8 @@ export default function CVEditor() {
         return <EducationSection data={cv.education} onChange={(v) => update("education", v)} />;
       case "workHistory":
         return <WorkHistorySection data={cv.workHistory} onChange={(v) => update("workHistory", v)} />;
+      case "references":
+        return <ReferencesSection data={cv.references} onChange={(v) => update("references", v)} />;
       case "custom": {
         const cs = cv.customSections[section.id];
         if (!cs) return null;

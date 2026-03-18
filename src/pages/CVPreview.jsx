@@ -14,11 +14,13 @@ const defaultCV = {
   experience: [],
   education: [],
   workHistory: [],
+  references: [],
   customSections: {},
   sectionOrder: [
     { id: "experience", type: "experience" },
     { id: "education", type: "education" },
     { id: "workHistory", type: "workHistory" },
+    { id: "references", type: "references" },
   ],
 };
 
@@ -55,13 +57,19 @@ export default function CVPreview() {
         const parsed = JSON.parse(saved);
         if (!Array.isArray(parsed.skills)) parsed.skills = [];
         if (!parsed.sectionOrder) parsed.sectionOrder = defaultCV.sectionOrder;
+        // migrate: ensure all built-in sections exist in sectionOrder
+        for (const section of defaultCV.sectionOrder) {
+          if (!parsed.sectionOrder.some((s) => s.id === section.id)) {
+            parsed.sectionOrder.push(section);
+          }
+        }
         if (!parsed.customSections) parsed.customSections = {};
         setCV({ ...defaultCV, ...parsed });
       }
     } catch {}
   }, []);
 
-  const { personal, summary, skills, languages, experience, education, workHistory, customSections, sectionOrder } = cv;
+  const { personal, summary, skills, languages, experience, education, workHistory, references, customSections, sectionOrder } = cv;
 
   const renderMainSection = (section) => {
     switch (section.type) {
@@ -92,6 +100,24 @@ export default function CVPreview() {
             {workHistory.map((job, i) => (
               <TimelineItem key={i} years={job.years} primary={job.title} secondary={job.organization} description={job.description} bullets={job.bullets} />
             ))}
+          </div>
+        ) : null;
+
+      case "references":
+        return references?.length > 0 ? (
+          <div key="references" className="mb-6">
+            <SectionHeader title="References" />
+            <div className="grid grid-cols-2 gap-4">
+              {references.map((ref, i) => (
+                <div key={i}>
+                  <p className="font-bold text-sm">{ref.name}</p>
+                  {ref.title && <p className="text-xs text-gray-600">{ref.title}{ref.organization ? `, ${ref.organization}` : ""}</p>}
+                  {!ref.title && ref.organization && <p className="text-xs text-gray-600">{ref.organization}</p>}
+                  {ref.phone && <p className="text-xs text-gray-500 mt-0.5">{ref.phone}</p>}
+                  {ref.email && <p className="text-xs text-gray-500">{ref.email}</p>}
+                </div>
+              ))}
+            </div>
           </div>
         ) : null;
 
