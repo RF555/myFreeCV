@@ -16,6 +16,7 @@ const defaultCV = {
   workHistory: [],
   references: [],
   customSections: {},
+  hiddenSections: {},
   sectionOrder: [
     { id: "experience", type: "experience" },
     { id: "education", type: "education" },
@@ -64,12 +65,13 @@ export default function CVPreview() {
           }
         }
         if (!parsed.customSections) parsed.customSections = {};
+        if (!parsed.hiddenSections) parsed.hiddenSections = {};
         setCV({ ...defaultCV, ...parsed });
       }
     } catch {}
   }, []);
 
-  const { personal, summary, skills, languages, experience, education, workHistory, references, customSections, sectionOrder } = cv;
+  const { personal, summary, skills, languages, experience, education, workHistory, references, customSections, sectionOrder, hiddenSections } = cv;
 
   const renderMainSection = (section) => {
     switch (section.type) {
@@ -177,35 +179,37 @@ export default function CVPreview() {
             </div>
 
             {/* Contact */}
-            <div className="mb-6 space-y-2">
-              {personal.phone && (
-                <p className="text-xs text-slate-300 flex items-center gap-2">
-                  <LuPhone className="w-3.5 h-3.5 flex-shrink-0" />
-                  {personal.phone}
-                </p>
-              )}
-              {personal.email && (
-                <p className="text-xs text-slate-300 break-all flex items-center gap-2">
-                  <LuMail className="w-3.5 h-3.5 flex-shrink-0" />
-                  {personal.email}
-                </p>
-              )}
-              {personal.github && (
-                <a href={personal.github} className="text-xs text-blue-300 break-all flex items-center gap-2" target="_blank" rel="noreferrer">
-                  <FaGithub className="w-3.5 h-3.5 flex-shrink-0" />
-                  {personal.github.replace(/^https?:\/\//, "")}
-                </a>
-              )}
-              {personal.linkedin && (
-                <a href={personal.linkedin} className="text-xs text-blue-300 break-all flex items-center gap-2" target="_blank" rel="noreferrer">
-                  <FaLinkedin className="w-3.5 h-3.5 flex-shrink-0" />
-                  {personal.linkedin.replace(/^https?:\/\//, "")}
-                </a>
-              )}
-            </div>
+            {!hiddenSections?.personal && (
+              <div className="mb-6 space-y-2">
+                {personal.phone && (
+                  <p className="text-xs text-slate-300 flex items-center gap-2">
+                    <LuPhone className="w-3.5 h-3.5 flex-shrink-0" />
+                    {personal.phone}
+                  </p>
+                )}
+                {personal.email && (
+                  <p className="text-xs text-slate-300 break-all flex items-center gap-2">
+                    <LuMail className="w-3.5 h-3.5 flex-shrink-0" />
+                    {personal.email}
+                  </p>
+                )}
+                {personal.github && (
+                  <a href={personal.github} className="text-xs text-blue-300 break-all flex items-center gap-2" target="_blank" rel="noreferrer">
+                    <FaGithub className="w-3.5 h-3.5 flex-shrink-0" />
+                    {personal.github.replace(/^https?:\/\//, "")}
+                  </a>
+                )}
+                {personal.linkedin && (
+                  <a href={personal.linkedin} className="text-xs text-blue-300 break-all flex items-center gap-2" target="_blank" rel="noreferrer">
+                    <FaLinkedin className="w-3.5 h-3.5 flex-shrink-0" />
+                    {personal.linkedin.replace(/^https?:\/\//, "")}
+                  </a>
+                )}
+              </div>
+            )}
 
             {/* Skills */}
-            {skills?.length > 0 && (
+            {!hiddenSections?.skills && skills?.length > 0 && (
               <div className="mb-6">
                 <h2 className="text-sm font-bold uppercase tracking-wider mb-3 border-b border-slate-600 pb-1">Skills</h2>
                 {skills.map((group, i) => (
@@ -220,7 +224,7 @@ export default function CVPreview() {
             )}
 
             {/* Languages */}
-            {languages?.length > 0 && (
+            {!hiddenSections?.languages && languages?.length > 0 && (
               <div>
                 <h2 className="text-sm font-bold uppercase tracking-wider mb-3 border-b border-slate-600 pb-1">Languages</h2>
                 {languages.map((l, i) => (
@@ -232,12 +236,12 @@ export default function CVPreview() {
 
           {/* Right Main Content */}
           <div className="flex-1 p-8">
-            {summary && (
+            {!hiddenSections?.summary && summary && (
               <div className="mb-6">
                 <p className="text-sm text-gray-700 leading-relaxed">{summary}</p>
               </div>
             )}
-            {sectionOrder.map((section) => renderMainSection(section))}
+            {sectionOrder.filter((s) => !hiddenSections?.[s.id]).map((section) => renderMainSection(section))}
           </div>
         </div>
       </div>

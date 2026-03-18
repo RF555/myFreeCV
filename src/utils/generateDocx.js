@@ -75,10 +75,10 @@ function mainHeading(text) {
   });
 }
 
-function buildSidebarContent(personal, skills, languages) {
+function buildSidebarContent(personal, skills, languages, hiddenSections) {
   const children = [];
 
-  // Name
+  // Name (always visible as document header)
   children.push(ltrParagraph({
     spacing: { after: 160 },
     children: [
@@ -93,53 +93,55 @@ function buildSidebarContent(personal, skills, languages) {
   }));
 
   // Contact
-  if (personal.phone) {
-    children.push(sidebarText(`☎  ${personal.phone}`));
-  }
-  if (personal.email) {
-    children.push(sidebarText(`✉  ${personal.email}`));
-  }
-  if (personal.github) {
-    children.push(ltrParagraph({
-      spacing: { after: 40 },
-      children: [
-        new ExternalHyperlink({
-          link: personal.github,
-          children: [
-            new TextRun({
-              text: personal.github.replace(/^https?:\/\//, ""),
-              font: "Calibri",
-              size: 18,
-              color: "93C5FD",
-              style: "Hyperlink",
-            }),
-          ],
-        }),
-      ],
-    }));
-  }
-  if (personal.linkedin) {
-    children.push(ltrParagraph({
-      spacing: { after: 40 },
-      children: [
-        new ExternalHyperlink({
-          link: personal.linkedin,
-          children: [
-            new TextRun({
-              text: personal.linkedin.replace(/^https?:\/\//, ""),
-              font: "Calibri",
-              size: 18,
-              color: "93C5FD",
-              style: "Hyperlink",
-            }),
-          ],
-        }),
-      ],
-    }));
+  if (!hiddenSections.personal) {
+    if (personal.phone) {
+      children.push(sidebarText(`☎  ${personal.phone}`));
+    }
+    if (personal.email) {
+      children.push(sidebarText(`✉  ${personal.email}`));
+    }
+    if (personal.github) {
+      children.push(ltrParagraph({
+        spacing: { after: 40 },
+        children: [
+          new ExternalHyperlink({
+            link: personal.github,
+            children: [
+              new TextRun({
+                text: personal.github.replace(/^https?:\/\//, ""),
+                font: "Calibri",
+                size: 18,
+                color: "93C5FD",
+                style: "Hyperlink",
+              }),
+            ],
+          }),
+        ],
+      }));
+    }
+    if (personal.linkedin) {
+      children.push(ltrParagraph({
+        spacing: { after: 40 },
+        children: [
+          new ExternalHyperlink({
+            link: personal.linkedin,
+            children: [
+              new TextRun({
+                text: personal.linkedin.replace(/^https?:\/\//, ""),
+                font: "Calibri",
+                size: 18,
+                color: "93C5FD",
+                style: "Hyperlink",
+              }),
+            ],
+          }),
+        ],
+      }));
+    }
   }
 
   // Skills
-  if (skills?.length > 0) {
+  if (!hiddenSections.skills && skills?.length > 0) {
     children.push(sidebarHeading("Skills"));
     for (const group of skills) {
       children.push(sidebarText(group.label, { bold: true, color: "CBD5E1", size: 18, after: 20 }));
@@ -150,7 +152,7 @@ function buildSidebarContent(personal, skills, languages) {
   }
 
   // Languages
-  if (languages?.length > 0) {
+  if (!hiddenSections.languages && languages?.length > 0) {
     children.push(sidebarHeading("Languages"));
     for (const lang of languages) {
       children.push(sidebarText(`•  ${lang}`, { color: "94A3B8", size: 17 }));
@@ -224,11 +226,11 @@ function buildReferenceItem(ref) {
   return children;
 }
 
-function buildMainContent(cv) {
+function buildMainContent(cv, hiddenSections) {
   const { summary, experience, education, workHistory, references, customSections, sectionOrder } = cv;
   const children = [];
 
-  if (summary) {
+  if (!hiddenSections.summary && summary) {
     children.push(ltrParagraph({
       spacing: { after: 120 },
       children: [new TextRun({ text: summary, font: "Calibri", size: 19, color: "374151" })],
@@ -236,6 +238,7 @@ function buildMainContent(cv) {
   }
 
   for (const section of sectionOrder || []) {
+    if (hiddenSections[section.id]) continue;
     switch (section.type) {
       case "experience":
         if (experience?.length > 0) {
@@ -303,8 +306,9 @@ function downloadBlob(blob, filename) {
 
 export async function generateDocx(cvData) {
   const personal = cvData.personal || {};
-  const sidebarChildren = buildSidebarContent(personal, cvData.skills, cvData.languages);
-  const mainChildren = buildMainContent(cvData);
+  const hiddenSections = cvData.hiddenSections || {};
+  const sidebarChildren = buildSidebarContent(personal, cvData.skills, cvData.languages, hiddenSections);
+  const mainChildren = buildMainContent(cvData, hiddenSections);
 
   // Ensure sidebar has at least one paragraph
   if (sidebarChildren.length === 0) {

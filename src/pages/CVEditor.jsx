@@ -14,7 +14,7 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { LuEye, LuSave, LuPlus, LuGripVertical } from "react-icons/lu";
+import { LuEye, LuEyeOff, LuSave, LuPlus, LuGripVertical } from "react-icons/lu";
 import { toast } from "sonner";
 
 const DEFAULT_SECTIONS = [
@@ -34,6 +34,7 @@ const defaultCV = {
   workHistory: [],
   references: [],
   customSections: {},
+  hiddenSections: {},
   sectionOrder: DEFAULT_SECTIONS,
 };
 
@@ -60,6 +61,7 @@ function loadCV() {
       }
     }
     if (!parsed.customSections) parsed.customSections = {};
+    if (!parsed.hiddenSections) parsed.hiddenSections = {};
     return parsed;
   } catch {
     return defaultCV;
@@ -124,6 +126,33 @@ export default function CVEditor() {
     setCV((prev) => ({ ...prev, sectionOrder: order }));
   };
 
+  const toggleSection = (sectionId) => {
+    setCV((prev) => {
+      const hs = { ...prev.hiddenSections };
+      if (hs[sectionId]) {
+        delete hs[sectionId];
+      } else {
+        hs[sectionId] = true;
+      }
+      return { ...prev, hiddenSections: hs };
+    });
+  };
+
+  const VisibilityToggle = ({ sectionId }) => {
+    const isHidden = cv.hiddenSections?.[sectionId];
+    return (
+      <Button
+        size="sm"
+        variant="ghost"
+        className="h-7 w-7 p-0"
+        onClick={() => toggleSection(sectionId)}
+        title={isHidden ? "Show in preview" : "Hide from preview"}
+      >
+        {isHidden ? <LuEyeOff className="w-4 h-4 text-gray-400" /> : <LuEye className="w-4 h-4 text-gray-500" />}
+      </Button>
+    );
+  };
+
   const renderSection = (section) => {
     switch (section.type) {
       case "experience":
@@ -172,10 +201,30 @@ export default function CVEditor() {
       {/* Form */}
       <div className="max-w-4xl mx-auto px-4 py-8 space-y-6">
         {/* Static top sections */}
-        <PersonalInfoSection data={cv.personal} onChange={(v) => update("personal", v)} />
-        <SummarySection data={cv.summary} onChange={(v) => update("summary", v)} />
-        <SkillsSection data={cv.skills} onChange={(v) => update("skills", v)} />
-        <LanguagesSection data={cv.languages} onChange={(v) => update("languages", v)} />
+        <div className={`relative ${cv.hiddenSections?.personal ? "opacity-50" : ""}`}>
+          <div className="absolute -left-7 top-1/2 -translate-y-1/2 hidden md:flex">
+            <VisibilityToggle sectionId="personal" />
+          </div>
+          <PersonalInfoSection data={cv.personal} onChange={(v) => update("personal", v)} />
+        </div>
+        <div className={`relative ${cv.hiddenSections?.summary ? "opacity-50" : ""}`}>
+          <div className="absolute -left-7 top-1/2 -translate-y-1/2 hidden md:flex">
+            <VisibilityToggle sectionId="summary" />
+          </div>
+          <SummarySection data={cv.summary} onChange={(v) => update("summary", v)} />
+        </div>
+        <div className={`relative ${cv.hiddenSections?.skills ? "opacity-50" : ""}`}>
+          <div className="absolute -left-7 top-1/2 -translate-y-1/2 hidden md:flex">
+            <VisibilityToggle sectionId="skills" />
+          </div>
+          <SkillsSection data={cv.skills} onChange={(v) => update("skills", v)} />
+        </div>
+        <div className={`relative ${cv.hiddenSections?.languages ? "opacity-50" : ""}`}>
+          <div className="absolute -left-7 top-1/2 -translate-y-1/2 hidden md:flex">
+            <VisibilityToggle sectionId="languages" />
+          </div>
+          <LanguagesSection data={cv.languages} onChange={(v) => update("languages", v)} />
+        </div>
 
         {/* Divider */}
         <div className="flex items-center gap-3 py-1">
@@ -195,14 +244,17 @@ export default function CVEditor() {
                       <div
                         ref={provided.innerRef}
                         {...provided.draggableProps}
-                        className={`relative ${snapshot.isDragging ? "opacity-80 shadow-xl" : ""}`}
+                        className={`relative ${snapshot.isDragging ? "opacity-80 shadow-xl" : ""} ${cv.hiddenSections?.[section.id] ? "opacity-50" : ""}`}
                       >
-                        {/* Drag handle */}
-                        <div
-                          {...provided.dragHandleProps}
-                          className="absolute -left-7 top-1/2 -translate-y-1/2 cursor-grab active:cursor-grabbing text-gray-300 hover:text-gray-500 hidden md:flex"
-                        >
-                          <LuGripVertical className="w-5 h-5" />
+                        {/* Left-side controls: visibility toggle + drag handle */}
+                        <div className="absolute -left-7 top-1/2 -translate-y-1/2 hidden md:flex flex-col items-center gap-1">
+                          <VisibilityToggle sectionId={section.id} />
+                          <div
+                            {...provided.dragHandleProps}
+                            className="cursor-grab active:cursor-grabbing text-gray-300 hover:text-gray-500"
+                          >
+                            <LuGripVertical className="w-5 h-5" />
+                          </div>
                         </div>
                         {renderSection(section)}
                       </div>
