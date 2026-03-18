@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
 import PersonalInfoSection from "../components/cv/PersonalInfoSection";
 import SummarySection from "../components/cv/SummarySection";
 import SkillsSection from "../components/cv/SkillsSection";
@@ -7,42 +8,135 @@ import ExperienceSection from "../components/cv/ExperienceSection";
 import EducationSection from "../components/cv/EducationSection";
 import WorkHistorySection from "../components/cv/WorkHistorySection";
 import LanguagesSection from "../components/cv/LanguagesSection";
+import CustomSection from "../components/cv/CustomSection";
 import { Button } from "@/components/ui/button";
-import { Eye, Save } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Eye, Save, Plus, GripVertical } from "lucide-react";
 import { toast } from "sonner";
+
+const DEFAULT_SECTIONS = [
+  { id: "experience", type: "experience" },
+  { id: "education", type: "education" },
+  { id: "workHistory", type: "workHistory" },
+];
 
 const defaultCV = {
   personal: { name: "", phone: "", email: "", github: "", linkedin: "" },
   summary: "",
-  skills: {
-    programmingLanguages: [],
-    databases: [],
-    aiml: [],
-    softwareArchitecture: [],
-  },
+  skills: [],
   languages: [],
   experience: [],
   education: [],
   workHistory: [],
+  customSections: {},
+  sectionOrder: DEFAULT_SECTIONS,
 };
 
-export default function CVEditor() {
-  const [cv, setCV] = useState(() => {
-    try {
-      const saved = localStorage.getItem("cv_data");
-      return saved ? JSON.parse(saved) : defaultCV;
-    } catch {
-      return defaultCV;
+function loadCV() {
+  try {
+    const saved = localStorage.getItem("cv_data");
+    if (!saved) return defaultCV;
+    const parsed = JSON.parse(saved);
+    // migrate old skills format
+    if (!Array.isArray(parsed.skills)) {
+      const old = parsed.skills || {};
+      parsed.skills = [
+        old.programmingLanguages?.length ? { label: "Programming Languages & Frameworks", items: old.programmingLanguages } : null,
+        old.databases?.length ? { label: "Databases", items: old.databases } : null,
+        old.aiml?.length ? { label: "AI/ML & Algorithms", items: old.aiml } : null,
+        old.softwareArchitecture?.length ? { label: "Software Architecture", items: old.softwareArchitecture } : null,
+      ].filter(Boolean);
     }
-  });
+    if (!parsed.sectionOrder) parsed.sectionOrder = DEFAULT_SECTIONS;
+    if (!parsed.customSections) parsed.customSections = {};
+    return parsed;
+  } catch {
+    return defaultCV;
+  }
+}
+
+export default function CVEditor() {
+  const [cv, setCV] = useState(loadCV);
+  const [addSectionOpen, setAddSectionOpen] = useState(false);
+  const [newSectionName, setNewSectionName] = useState("");
+
+  useEffect(() => {
+    localStorage.setItem("cv_data", JSON.stringify(cv));
+  }, [cv]);
 
   const save = () => {
     localStorage.setItem("cv_data", JSON.stringify(cv));
     toast.success("CV saved!");
   };
 
-  const update = (section, value) => {
-    setCV((prev) => ({ ...prev, [section]: value }));
+  const update = (field, value) => setCV((prev) => ({ ...prev, [field]: value }));
+
+  const openAddSection = () => { setNewSectionName(""); setAddSectionOpen(true); };
+
+  const addCustomSection = () => {
+    const title = newSectionName.trim();
+    if (!title) return;
+    const id = `custom_${Date.now()}`;
+    const newSection = { id, title, items: [] };
+    setCV((prev) => ({
+      ...prev,
+      customSections: { ...prev.customSections, [id]: newSection },
+      sectionOrder: [...prev.sectionOrder, { id, type: "custom" }],
+    }));
+    setAddSectionOpen(false);
+  };
+
+  const updateCustomSection = (id, value) => {
+    setCV((prev) => ({
+      ...prev,
+      customSections: { ...prev.customSections, [id]: value },
+    }));
+  };
+
+  const deleteCustomSection = (id) => {
+    setCV((prev) => {
+      const cs = { ...prev.customSections };
+      delete cs[id];
+      return {
+        ...prev,
+        customSections: cs,
+        sectionOrder: prev.sectionOrder.filter((s) => s.id !== id),
+      };
+    });
+  };
+
+  const onDragEnd = (result) => {
+    if (!result.destination) return;
+    const order = [...cv.sectionOrder];
+    const [moved] = order.splice(result.source.index, 1);
+    order.splice(result.destination.index, 0, moved);
+    setCV((prev) => ({ ...prev, sectionOrder: order }));
+  };
+
+  const renderSection = (section) => {
+    switch (section.type) {
+      case "experience":
+        return <ExperienceSection data={cv.experience} onChange={(v) => update("experience", v)} />;
+      case "education":
+        return <EducationSection data={cv.education} onChange={(v) => update("education", v)} />;
+      case "workHistory":
+        return <WorkHistorySection data={cv.workHistory} onChange={(v) => update("workHistory", v)} />;
+      case "custom": {
+        const cs = cv.customSections[section.id];
+        if (!cs) return null;
+        return (
+          <CustomSection
+            section={cs}
+            onChange={(v) => updateCustomSection(section.id, v)}
+            onDelete={() => deleteCustomSection(section.id)}
+          />
+        );
+      }
+      default:
+        return null;
+    }
   };
 
   return (
@@ -66,13 +160,80 @@ export default function CVEditor() {
 
       {/* Form */}
       <div className="max-w-4xl mx-auto px-4 py-8 space-y-6">
+        {/* Static top sections */}
         <PersonalInfoSection data={cv.personal} onChange={(v) => update("personal", v)} />
         <SummarySection data={cv.summary} onChange={(v) => update("summary", v)} />
         <SkillsSection data={cv.skills} onChange={(v) => update("skills", v)} />
         <LanguagesSection data={cv.languages} onChange={(v) => update("languages", v)} />
-        <ExperienceSection data={cv.experience} onChange={(v) => update("experience", v)} />
-        <EducationSection data={cv.education} onChange={(v) => update("education", v)} />
-        <WorkHistorySection data={cv.workHistory} onChange={(v) => update("workHistory", v)} />
+
+        {/* Divider */}
+        <div className="flex items-center gap-3 py-1">
+          <div className="flex-1 border-t border-dashed border-gray-300" />
+          <span className="text-xs text-gray-400 flex items-center gap-1"><GripVertical className="w-3 h-3" /> Drag to reorder sections below</span>
+          <div className="flex-1 border-t border-dashed border-gray-300" />
+        </div>
+
+        {/* Draggable sections */}
+        <DragDropContext onDragEnd={onDragEnd}>
+          <Droppable droppableId="sections">
+            {(provided) => (
+              <div {...provided.droppableProps} ref={provided.innerRef} className="space-y-6">
+                {cv.sectionOrder.map((section, index) => (
+                  <Draggable key={section.id} draggableId={section.id} index={index}>
+                    {(provided, snapshot) => (
+                      <div
+                        ref={provided.innerRef}
+                        {...provided.draggableProps}
+                        className={`relative ${snapshot.isDragging ? "opacity-80 shadow-xl" : ""}`}
+                      >
+                        {/* Drag handle */}
+                        <div
+                          {...provided.dragHandleProps}
+                          className="absolute -left-7 top-1/2 -translate-y-1/2 cursor-grab active:cursor-grabbing text-gray-300 hover:text-gray-500 hidden md:flex"
+                        >
+                          <GripVertical className="w-5 h-5" />
+                        </div>
+                        {renderSection(section)}
+                      </div>
+                    )}
+                  </Draggable>
+                ))}
+                {provided.placeholder}
+              </div>
+            )}
+          </Droppable>
+        </DragDropContext>
+
+        {/* Add custom section */}
+        <button
+          onClick={openAddSection}
+          className="w-full border-2 border-dashed border-gray-300 rounded-xl py-4 text-sm text-gray-400 hover:text-gray-600 hover:border-gray-400 transition flex items-center justify-center gap-2"
+        >
+          <Plus className="w-4 h-4" /> Add Custom Section
+        </button>
+
+        <Dialog open={addSectionOpen} onOpenChange={setAddSectionOpen}>
+          <DialogContent className="max-w-sm">
+            <DialogHeader>
+              <DialogTitle>Add Custom Section</DialogTitle>
+            </DialogHeader>
+            <div className="py-2">
+              <Label className="text-sm font-medium">Section Name</Label>
+              <Input
+                value={newSectionName}
+                onChange={(e) => setNewSectionName(e.target.value)}
+                onKeyDown={(e) => e.key === "Enter" && addCustomSection()}
+                placeholder="e.g. Projects, Certifications"
+                className="mt-1"
+                autoFocus
+              />
+            </div>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setAddSectionOpen(false)}>Cancel</Button>
+              <Button onClick={addCustomSection} disabled={!newSectionName.trim()}>Add</Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
 
         <div className="flex justify-end gap-2 pb-10">
           <Button variant="outline" onClick={save} className="gap-2">

@@ -1,60 +1,35 @@
 import React, { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { History, Plus, Trash2, ChevronDown, ChevronUp } from "lucide-react";
+import { History, Plus, Pencil, Trash2 } from "lucide-react";
+import ItemModal, { formatYearRange } from "./ItemModal";
 
-function BulletList({ bullets, onChange }) {
-  const [input, setInput] = useState("");
-
-  const add = () => {
-    const v = input.trim();
-    if (v) { onChange([...(bullets || []), v]); setInput(""); }
-  };
-
-  const remove = (i) => onChange((bullets || []).filter((_, idx) => idx !== i));
-
-  return (
-    <div>
-      <Label className="text-xs">Bullet Points</Label>
-      <div className="flex gap-2 mb-2 mt-1">
-        <Input value={input} onChange={(e) => setInput(e.target.value)}
-          onKeyDown={(e) => e.key === "Enter" && add()}
-          placeholder="Add a bullet point..." className="h-8 text-sm" />
-        <Button size="sm" variant="outline" onClick={add} className="h-8"><Plus className="w-3 h-3" /></Button>
-      </div>
-      <div className="space-y-1">
-        {(bullets || []).map((b, i) => (
-          <div key={i} className="flex items-start gap-2 bg-gray-50 rounded px-2 py-1">
-            <span className="text-xs flex-1">• {b}</span>
-            <Trash2 className="w-3 h-3 text-red-400 cursor-pointer flex-shrink-0 mt-0.5" onClick={() => remove(i)} />
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-const empty = { years: "", title: "", organization: "", description: "", bullets: [] };
+const SCHEMA = [
+  { key: "years", label: "Years", type: "yearRange" },
+  { key: "title", label: "Role / Title", type: "text", placeholder: "Team Lead" },
+  { key: "organization", label: "Organization", type: "text", placeholder: "Organization Name" },
+  { key: "description", label: "Description (optional)", type: "textarea", placeholder: "Brief description..." },
+  { key: "bullets", label: "Bullet Points", type: "bullets" },
+];
 
 export default function WorkHistorySection({ data, onChange }) {
-  const [open, setOpen] = useState(null);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [editingIndex, setEditingIndex] = useState(null);
 
-  const add = () => {
-    const updated = [...(data || []), { ...empty }];
-    onChange(updated);
-    setOpen(updated.length - 1);
+  const openAdd = () => { setEditingIndex(null); setModalOpen(true); };
+  const openEdit = (i) => { setEditingIndex(i); setModalOpen(true); };
+
+  const handleSave = (item) => {
+    if (editingIndex === null) {
+      onChange([...(data || []), item]);
+    } else {
+      const updated = [...(data || [])];
+      updated[editingIndex] = item;
+      onChange(updated);
+    }
   };
 
-  const update = (i, field, val) => {
-    const updated = [...(data || [])];
-    updated[i] = { ...updated[i], [field]: val };
-    onChange(updated);
-  };
-
-  const remove = (i) => { onChange((data || []).filter((_, idx) => idx !== i)); setOpen(null); };
+  const remove = (i) => onChange((data || []).filter((_, idx) => idx !== i));
 
   return (
     <Card>
@@ -63,54 +38,50 @@ export default function WorkHistorySection({ data, onChange }) {
           <CardTitle className="flex items-center gap-2 text-base">
             <History className="w-4 h-4" /> Work History
           </CardTitle>
-          <Button size="sm" variant="outline" onClick={add} className="gap-1 h-8">
+          <Button size="sm" variant="outline" onClick={openAdd} className="gap-1 h-8">
             <Plus className="w-3 h-3" /> Add
           </Button>
         </div>
       </CardHeader>
-      <CardContent className="space-y-3">
+      <CardContent className="space-y-2">
         {(data || []).length === 0 && <p className="text-sm text-gray-400 text-center py-2">No work history added yet.</p>}
         {(data || []).map((job, i) => (
-          <div key={i} className="border rounded-lg overflow-hidden">
-            <div
-              className="flex items-center justify-between px-4 py-3 bg-gray-50 cursor-pointer"
-              onClick={() => setOpen(open === i ? null : i)}
-            >
-              <div>
-                <span className="font-medium text-sm">{job.title || "New Entry"}</span>
-                {job.organization && <span className="text-xs text-gray-500 ml-2">@ {job.organization}</span>}
+          <div key={i} className="border rounded-lg px-4 py-3 bg-gray-50">
+            <div className="flex items-start justify-between">
+              <div className="flex-1 min-w-0">
+                <p className="font-medium text-sm">{job.title || "Untitled"}</p>
+                <p className="text-xs text-gray-500">{[job.organization, formatYearRange(job.years)].filter(Boolean).join(" · ")}</p>
               </div>
-              <div className="flex items-center gap-2">
-                <Trash2 className="w-4 h-4 text-red-400 hover:text-red-600" onClick={(e) => { e.stopPropagation(); remove(i); }} />
-                {open === i ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+              <div className="flex gap-1 ml-2 flex-shrink-0">
+                <Button size="sm" variant="ghost" className="h-7 w-7 p-0" onClick={() => openEdit(i)}><Pencil className="w-3 h-3" /></Button>
+                <Button size="sm" variant="ghost" className="h-7 w-7 p-0 text-red-400 hover:text-red-600" onClick={() => remove(i)}><Trash2 className="w-3 h-3" /></Button>
               </div>
             </div>
-            {open === i && (
-              <div className="p-4 space-y-3">
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                  <div>
-                    <Label className="text-xs">Years</Label>
-                    <Input value={job.years} onChange={(e) => update(i, "years", e.target.value)} className="h-8 text-sm mt-1" />
-                  </div>
-                  <div>
-                    <Label className="text-xs">Role / Title</Label>
-                    <Input value={job.title} onChange={(e) => update(i, "title", e.target.value)} className="h-8 text-sm mt-1" />
-                  </div>
-                  <div>
-                    <Label className="text-xs">Organization</Label>
-                    <Input value={job.organization} onChange={(e) => update(i, "organization", e.target.value)} className="h-8 text-sm mt-1" />
-                  </div>
-                </div>
-                <div>
-                  <Label className="text-xs">Description (optional)</Label>
-                  <Textarea value={job.description} onChange={(e) => update(i, "description", e.target.value)} rows={2} className="text-sm mt-1" />
-                </div>
-                <BulletList bullets={job.bullets} onChange={(v) => update(i, "bullets", v)} />
-              </div>
+            {job.description && (
+              <p className="text-xs text-gray-600 mt-2">{job.description}</p>
+            )}
+            {(job.bullets || []).length > 0 && (
+              <ul className="mt-2 space-y-0.5">
+                {job.bullets.map((b, j) => (
+                  <li key={j} className="text-xs text-gray-600 flex gap-1.5">
+                    <span className="text-gray-400">•</span>
+                    <span>{b}</span>
+                  </li>
+                ))}
+              </ul>
             )}
           </div>
         ))}
       </CardContent>
+
+      <ItemModal
+        open={modalOpen}
+        onClose={() => setModalOpen(false)}
+        onSave={handleSave}
+        schema={SCHEMA}
+        initialData={editingIndex !== null ? (data || [])[editingIndex] : null}
+        title={editingIndex !== null ? "Edit Work History" : "Add Work History"}
+      />
     </Card>
   );
 }

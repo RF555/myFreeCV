@@ -28,7 +28,7 @@ export default function LanguagesSection({ data, onChange }) {
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && add()}
-            placeholder="e.g. Hebrew, English..."
+            placeholder="Add a language..."
             className="h-8 text-sm"
           />
           <Button size="sm" variant="outline" onClick={add} className="h-8">

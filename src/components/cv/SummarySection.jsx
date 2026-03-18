@@ -14,7 +14,7 @@ export default function SummarySection({ data, onChange }) {
       <CardContent>
         <Textarea
           rows={4}
-          placeholder="Motivated Full-Stack Developer with..."
+          placeholder="Briefly describe your professional background and goals..."
           value={data}
           onChange={(e) => onChange(e.target.value)}
         />

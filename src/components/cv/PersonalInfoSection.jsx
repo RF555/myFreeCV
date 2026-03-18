@@ -17,15 +17,15 @@ export default function PersonalInfoSection({ data, onChange }) {
       <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="md:col-span-2">
           <Label>Full Name</Label>
-          <Input placeholder="Roey Feingold" value={data.name} onChange={(e) => update("name", e.target.value)} />
+          <Input placeholder="John Doe" value={data.name} onChange={(e) => update("name", e.target.value)} />
         </div>
         <div>
           <Label>Phone</Label>
-          <Input placeholder="+972-50-0000000" value={data.phone} onChange={(e) => update("phone", e.target.value)} />
+          <Input placeholder="+1 (555) 123-4567" value={data.phone} onChange={(e) => update("phone", e.target.value)} />
         </div>
         <div>
           <Label>Email</Label>
-          <Input placeholder="email@gmail.com" value={data.email} onChange={(e) => update("email", e.target.value)} />
+          <Input placeholder="john.doe@email.com" value={data.email} onChange={(e) => update("email", e.target.value)} />
         </div>
         <div>
           <Label>GitHub URL</Label>
