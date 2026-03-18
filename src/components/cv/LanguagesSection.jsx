@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Globe, Plus, X } from "lucide-react";
+import { LuGlobe, LuPlus, LuX } from "react-icons/lu";
 
 export default function LanguagesSection({ data, onChange }) {
   const [input, setInput] = useState("");
@@ -19,7 +19,7 @@ export default function LanguagesSection({ data, onChange }) {
     <Card>
       <CardHeader className="pb-3">
         <CardTitle className="flex items-center gap-2 text-base">
-          <Globe className="w-4 h-4" /> Languages
+          <LuGlobe className="w-4 h-4" /> Languages
         </CardTitle>
       </CardHeader>
       <CardContent>
@@ -32,14 +32,14 @@ export default function LanguagesSection({ data, onChange }) {
             className="h-8 text-sm"
           />
           <Button size="sm" variant="outline" onClick={add} className="h-8">
-            <Plus className="w-3 h-3" />
+            <LuPlus className="w-3 h-3" />
           </Button>
         </div>
         <div className="flex flex-wrap gap-1">
           {(data || []).map((l, i) => (
             <Badge key={i} variant="secondary" className="gap-1">
               {l}
-              <X className="w-3 h-3 cursor-pointer" onClick={() => remove(i)} />
+              <LuX className="w-3 h-3 cursor-pointer" onClick={() => remove(i)} />
             </Badge>
           ))}
         </div>

@@ -1,14 +1,14 @@
 import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
-import { FileText } from "lucide-react";
+import { LuFileText } from "react-icons/lu";
 
 export default function SummarySection({ data, onChange }) {
   return (
     <Card>
       <CardHeader className="pb-3">
         <CardTitle className="flex items-center gap-2 text-base">
-          <FileText className="w-4 h-4" /> Professional Summary
+          <LuFileText className="w-4 h-4" /> Professional Summary
         </CardTitle>
       </CardHeader>
       <CardContent>

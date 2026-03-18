@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { History, Plus, Pencil, Trash2 } from "lucide-react";
+import { LuHistory, LuPlus, LuPencil, LuTrash2 } from "react-icons/lu";
 import ItemModal, { formatYearRange } from "./ItemModal";
 
 const SCHEMA = [
@@ -36,10 +36,10 @@ export default function WorkHistorySection({ data, onChange }) {
       <CardHeader className="pb-3">
         <div className="flex items-center justify-between">
           <CardTitle className="flex items-center gap-2 text-base">
-            <History className="w-4 h-4" /> Work History
+            <LuHistory className="w-4 h-4" /> Work History
           </CardTitle>
           <Button size="sm" variant="outline" onClick={openAdd} className="gap-1 h-8">
-            <Plus className="w-3 h-3" /> Add
+            <LuPlus className="w-3 h-3" /> Add
           </Button>
         </div>
       </CardHeader>
@@ -53,8 +53,8 @@ export default function WorkHistorySection({ data, onChange }) {
                 <p className="text-xs text-gray-500">{[job.organization, formatYearRange(job.years)].filter(Boolean).join(" · ")}</p>
               </div>
               <div className="flex gap-1 ml-2 flex-shrink-0">
-                <Button size="sm" variant="ghost" className="h-7 w-7 p-0" onClick={() => openEdit(i)}><Pencil className="w-3 h-3" /></Button>
-                <Button size="sm" variant="ghost" className="h-7 w-7 p-0 text-red-400 hover:text-red-600" onClick={() => remove(i)}><Trash2 className="w-3 h-3" /></Button>
+                <Button size="sm" variant="ghost" className="h-7 w-7 p-0" onClick={() => openEdit(i)}><LuPencil className="w-3 h-3" /></Button>
+                <Button size="sm" variant="ghost" className="h-7 w-7 p-0 text-red-400 hover:text-red-600" onClick={() => remove(i)}><LuTrash2 className="w-3 h-3" /></Button>
               </div>
             </div>
             {job.description && (

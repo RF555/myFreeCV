@@ -13,7 +13,7 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Eye, Save, Plus, GripVertical } from "lucide-react";
+import { LuEye, LuSave, LuPlus, LuGripVertical } from "react-icons/lu";
 import { toast } from "sonner";
 
 const DEFAULT_SECTIONS = [
@@ -147,11 +147,11 @@ export default function CVEditor() {
           <h1 className="text-xl font-bold text-gray-800">CV Builder</h1>
           <div className="flex gap-2">
             <Button variant="outline" onClick={save} className="gap-2">
-              <Save className="w-4 h-4" /> Save
+              <LuSave className="w-4 h-4" /> Save
             </Button>
             <Link to="/preview">
               <Button className="gap-2">
-                <Eye className="w-4 h-4" /> Preview CV
+                <LuEye className="w-4 h-4" /> Preview CV
               </Button>
             </Link>
           </div>
@@ -169,7 +169,7 @@ export default function CVEditor() {
         {/* Divider */}
         <div className="flex items-center gap-3 py-1">
           <div className="flex-1 border-t border-dashed border-gray-300" />
-          <span className="text-xs text-gray-400 flex items-center gap-1"><GripVertical className="w-3 h-3" /> Drag to reorder sections below</span>
+          <span className="text-xs text-gray-400 flex items-center gap-1"><LuGripVertical className="w-3 h-3" /> Drag to reorder sections below</span>
           <div className="flex-1 border-t border-dashed border-gray-300" />
         </div>
 
@@ -191,7 +191,7 @@ export default function CVEditor() {
                           {...provided.dragHandleProps}
                           className="absolute -left-7 top-1/2 -translate-y-1/2 cursor-grab active:cursor-grabbing text-gray-300 hover:text-gray-500 hidden md:flex"
                         >
-                          <GripVertical className="w-5 h-5" />
+                          <LuGripVertical className="w-5 h-5" />
                         </div>
                         {renderSection(section)}
                       </div>
@@ -209,7 +209,7 @@ export default function CVEditor() {
           onClick={openAddSection}
           className="w-full border-2 border-dashed border-gray-300 rounded-xl py-4 text-sm text-gray-400 hover:text-gray-600 hover:border-gray-400 transition flex items-center justify-center gap-2"
         >
-          <Plus className="w-4 h-4" /> Add Custom Section
+          <LuPlus className="w-4 h-4" /> Add Custom Section
         </button>
 
         <Dialog open={addSectionOpen} onOpenChange={setAddSectionOpen}>
@@ -237,11 +237,11 @@ export default function CVEditor() {
 
         <div className="flex justify-end gap-2 pb-10">
           <Button variant="outline" onClick={save} className="gap-2">
-            <Save className="w-4 h-4" /> Save
+            <LuSave className="w-4 h-4" /> Save
           </Button>
           <Link to="/preview">
             <Button className="gap-2">
-              <Eye className="w-4 h-4" /> Preview CV
+              <LuEye className="w-4 h-4" /> Preview CV
             </Button>
           </Link>
         </div>

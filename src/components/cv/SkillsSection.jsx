@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Code, Plus, X, Trash2 } from "lucide-react";
+import { LuCode, LuPlus, LuX, LuTrash2 } from "react-icons/lu";
 
 function SkillGroup({ group, onAddSkill, onRemoveSkill, onRemoveGroup, onRenameGroup }) {
   const [skillInput, setSkillInput] = useState("");
@@ -43,7 +43,7 @@ function SkillGroup({ group, onAddSkill, onRemoveSkill, onRemoveGroup, onRenameG
             {group.label}
           </p>
         )}
-        <Trash2 className="w-4 h-4 text-red-400 cursor-pointer hover:text-red-600 flex-shrink-0" onClick={onRemoveGroup} />
+        <LuTrash2 className="w-4 h-4 text-red-400 cursor-pointer hover:text-red-600 flex-shrink-0" onClick={onRemoveGroup} />
       </div>
       <div className="flex gap-2 mb-2">
         <Input
@@ -54,14 +54,14 @@ function SkillGroup({ group, onAddSkill, onRemoveSkill, onRemoveGroup, onRenameG
           className="h-7 text-sm"
         />
         <Button size="sm" variant="outline" onClick={handleAddSkill} className="h-7 px-2">
-          <Plus className="w-3 h-3" />
+          <LuPlus className="w-3 h-3" />
         </Button>
       </div>
       <div className="flex flex-wrap gap-1">
         {(group.items || []).map((s, i) => (
           <Badge key={i} variant="secondary" className="gap-1 text-xs">
             {s}
-            <X className="w-3 h-3 cursor-pointer" onClick={() => onRemoveSkill(i)} />
+            <LuX className="w-3 h-3 cursor-pointer" onClick={() => onRemoveSkill(i)} />
           </Badge>
         ))}
       </div>
@@ -102,10 +102,10 @@ export default function SkillsSection({ data, onChange }) {
       <CardHeader className="pb-3">
         <div className="flex items-center justify-between">
           <CardTitle className="flex items-center gap-2 text-base">
-            <Code className="w-4 h-4" /> Skills
+            <LuCode className="w-4 h-4" /> Skills
           </CardTitle>
           <Button size="sm" variant="outline" onClick={openAddModal} className="gap-1 h-8">
-            <Plus className="w-3 h-3" /> Add Category
+            <LuPlus className="w-3 h-3" /> Add Category
           </Button>
         </div>
       </CardHeader>

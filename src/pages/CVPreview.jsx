@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Pencil, Printer } from "lucide-react";
+import { LuPencil, LuPrinter, LuPhone, LuMail } from "react-icons/lu";
+import { FaGithub, FaLinkedin } from "react-icons/fa";
 import { formatYearRange } from "../components/cv/ItemModal";
 
 const defaultCV = {
@@ -118,10 +119,10 @@ export default function CVPreview() {
           <h1 className="text-xl font-bold text-gray-800">CV Preview</h1>
           <div className="flex gap-2">
             <Link to="/editor">
-              <Button variant="outline" className="gap-2"><Pencil className="w-4 h-4" /> Edit</Button>
+              <Button variant="outline" className="gap-2"><LuPencil className="w-4 h-4" /> Edit</Button>
             </Link>
             <Button className="gap-2" onClick={() => window.print()}>
-              <Printer className="w-4 h-4" /> Print / Save PDF
+              <LuPrinter className="w-4 h-4" /> Print / Save PDF
             </Button>
           </div>
         </div>
@@ -139,15 +140,27 @@ export default function CVPreview() {
 
             {/* Contact */}
             <div className="mb-6 space-y-2">
-              {personal.phone && <p className="text-xs text-slate-300">{personal.phone}</p>}
-              {personal.email && <p className="text-xs text-slate-300 break-all">{personal.email}</p>}
+              {personal.phone && (
+                <p className="text-xs text-slate-300 flex items-center gap-2">
+                  <LuPhone className="w-3.5 h-3.5 flex-shrink-0" />
+                  {personal.phone}
+                </p>
+              )}
+              {personal.email && (
+                <p className="text-xs text-slate-300 break-all flex items-center gap-2">
+                  <LuMail className="w-3.5 h-3.5 flex-shrink-0" />
+                  {personal.email}
+                </p>
+              )}
               {personal.github && (
-                <a href={personal.github} className="text-xs text-blue-300 break-all block" target="_blank" rel="noreferrer">
+                <a href={personal.github} className="text-xs text-blue-300 break-all flex items-center gap-2" target="_blank" rel="noreferrer">
+                  <FaGithub className="w-3.5 h-3.5 flex-shrink-0" />
                   {personal.github.replace(/^https?:\/\//, "")}
                 </a>
               )}
               {personal.linkedin && (
-                <a href={personal.linkedin} className="text-xs text-blue-300 break-all block" target="_blank" rel="noreferrer">
+                <a href={personal.linkedin} className="text-xs text-blue-300 break-all flex items-center gap-2" target="_blank" rel="noreferrer">
+                  <FaLinkedin className="w-3.5 h-3.5 flex-shrink-0" />
                   {personal.linkedin.replace(/^https?:\/\//, "")}
                 </a>
               )}

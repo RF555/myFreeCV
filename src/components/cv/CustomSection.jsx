@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { LayoutTemplate, Plus, Pencil, Trash2, Settings2 } from "lucide-react";
+import { LuLayoutTemplate, LuPlus, LuPencil, LuTrash2, LuSettings2 } from "react-icons/lu";
 import ItemModal, { formatYearRange } from "./ItemModal";
 
 const DEFAULT_SCHEMA = [
@@ -84,7 +84,7 @@ function FieldConfigurator({ schema, onChange, open, onClose }) {
               </div>
               <span className="text-xs text-gray-400 whitespace-nowrap">{field.type}</span>
               <Button size="sm" variant="ghost" className="h-7 w-7 p-0 text-red-400 hover:text-red-600" onClick={() => removeField(i)}>
-                <Trash2 className="w-3 h-3" />
+                <LuTrash2 className="w-3 h-3" />
               </Button>
             </div>
           ))}
@@ -111,7 +111,7 @@ function FieldConfigurator({ schema, onChange, open, onClose }) {
                 </SelectContent>
               </Select>
               <Button size="sm" variant="outline" onClick={addField} className="h-8 px-2" disabled={!newLabel.trim()}>
-                <Plus className="w-3 h-3" />
+                <LuPlus className="w-3 h-3" />
               </Button>
             </div>
           </div>
@@ -167,7 +167,7 @@ export default function CustomSection({ section, onChange, onDelete }) {
       <CardHeader className="pb-3">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2 flex-1 min-w-0">
-            <LayoutTemplate className="w-4 h-4 flex-shrink-0" />
+            <LuLayoutTemplate className="w-4 h-4 flex-shrink-0" />
             {editingTitle ? (
               <Input
                 value={titleInput}
@@ -189,13 +189,13 @@ export default function CustomSection({ section, onChange, onDelete }) {
           </div>
           <div className="flex gap-2 ml-2">
             <Button size="sm" variant="ghost" onClick={() => setConfigOpen(true)} className="h-8 w-8 p-0 text-gray-400 hover:text-gray-600" title="Configure fields">
-              <Settings2 className="w-4 h-4" />
+              <LuSettings2 className="w-4 h-4" />
             </Button>
             <Button size="sm" variant="outline" onClick={openAdd} className="gap-1 h-8">
-              <Plus className="w-3 h-3" /> Add
+              <LuPlus className="w-3 h-3" /> Add
             </Button>
             <Button size="sm" variant="ghost" className="h-8 w-8 p-0 text-red-400 hover:text-red-600" onClick={onDelete}>
-              <Trash2 className="w-4 h-4" />
+              <LuTrash2 className="w-4 h-4" />
             </Button>
           </div>
         </div>
@@ -223,8 +223,8 @@ export default function CustomSection({ section, onChange, onDelete }) {
                 {!item[schema[0]?.key] && <p className="font-medium text-sm text-gray-400">Untitled</p>}
               </div>
               <div className="flex gap-1 ml-2 flex-shrink-0">
-                <Button size="sm" variant="ghost" className="h-7 w-7 p-0" onClick={() => openEdit(i)}><Pencil className="w-3 h-3" /></Button>
-                <Button size="sm" variant="ghost" className="h-7 w-7 p-0 text-red-400 hover:text-red-600" onClick={() => remove(i)}><Trash2 className="w-3 h-3" /></Button>
+                <Button size="sm" variant="ghost" className="h-7 w-7 p-0" onClick={() => openEdit(i)}><LuPencil className="w-3 h-3" /></Button>
+                <Button size="sm" variant="ghost" className="h-7 w-7 p-0 text-red-400 hover:text-red-600" onClick={() => remove(i)}><LuTrash2 className="w-3 h-3" /></Button>
               </div>
             </div>
             {schema.filter(f => f.type === "bullets").map((field) => {

@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Plus, Trash2, ChevronUp, ChevronDown } from "lucide-react";
+import { LuPlus, LuTrash2, LuChevronUp, LuChevronDown } from "react-icons/lu";
 
 const CURRENT_YEAR = new Date().getFullYear();
 const YEARS = Array.from({ length: 50 }, (_, i) => CURRENT_YEAR - i);
@@ -89,22 +89,22 @@ function BulletEditor({ bullets, onChange }) {
         <Input value={input} onChange={(e) => setInput(e.target.value)}
           onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), add())}
           placeholder="Type a bullet point and press Enter..." className="h-8 text-sm" />
-        <Button size="sm" variant="outline" onClick={add} className="h-8 px-2"><Plus className="w-3 h-3" /></Button>
+        <Button size="sm" variant="outline" onClick={add} className="h-8 px-2"><LuPlus className="w-3 h-3" /></Button>
       </div>
       <div className="space-y-1 max-h-48 overflow-y-auto">
         {(bullets || []).map((b, i) => (
           <div key={i} className="flex items-start gap-1">
             <div className="flex flex-col">
               <Button size="sm" variant="ghost" className="h-3.5 w-5 p-0" onClick={() => move(i, -1)} disabled={i === 0}>
-                <ChevronUp className="w-3 h-3" />
+                <LuChevronUp className="w-3 h-3" />
               </Button>
               <Button size="sm" variant="ghost" className="h-3.5 w-5 p-0" onClick={() => move(i, 1)} disabled={i === (bullets || []).length - 1}>
-                <ChevronDown className="w-3 h-3" />
+                <LuChevronDown className="w-3 h-3" />
               </Button>
             </div>
             <Input value={b} onChange={(e) => edit(i, e.target.value)} className="h-7 text-xs flex-1" />
             <Button size="sm" variant="ghost" className="h-7 px-1 text-red-400 hover:text-red-600" onClick={() => remove(i)}>
-              <Trash2 className="w-3 h-3" />
+              <LuTrash2 className="w-3 h-3" />
             </Button>
           </div>
         ))}
