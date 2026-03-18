@@ -121,7 +121,15 @@ export default function CVPreview() {
             <Link to="/editor">
               <Button variant="outline" className="gap-2"><LuPencil className="w-4 h-4" /> Edit</Button>
             </Link>
-            <Button className="gap-2" onClick={() => window.print()}>
+            <Button className="gap-2" onClick={() => {
+              const prev = document.title;
+              const now = new Date();
+              const dt = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")} ${String(now.getHours()).padStart(2, "0")}${String(now.getMinutes()).padStart(2, "0")}`;
+              const name = personal.name || "CV";
+              document.title = `${dt} - ${name} - myFreeCV`;
+              window.print();
+              document.title = prev;
+            }}>
               <LuPrinter className="w-4 h-4" /> Print / Save PDF
             </Button>
           </div>
