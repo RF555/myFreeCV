@@ -17,9 +17,10 @@ import {
 } from "docx";
 import { formatYearRange } from "../components/cv/ItemModal";
 
+const ensureProtocol = (url) => /^https?:\/\//.test(url) ? url : `https://${url}`;
 const SIDEBAR_BG = "334155";
-const SIDEBAR_WIDTH = 2800; // twips (~2")
-const MAIN_WIDTH = 7600;    // twips (~5.3")
+const SIDEBAR_WIDTH = 3200; // twips (~2.2")
+const MAIN_WIDTH = 7200;    // twips (~5")
 const NO_BORDER = { style: BorderStyle.NONE, size: 0, color: "FFFFFF" };
 const BORDERS_NONE = { top: NO_BORDER, bottom: NO_BORDER, left: NO_BORDER, right: NO_BORDER };
 
@@ -98,17 +99,33 @@ function buildSidebarContent(personal, skills, languages, hiddenSections) {
       children.push(sidebarText(`☎  ${personal.phone}`));
     }
     if (personal.email) {
-      children.push(sidebarText(`✉  ${personal.email}`));
+      children.push(ltrParagraph({
+        spacing: { after: 40 },
+        children: [
+          new ExternalHyperlink({
+            link: `mailto:${personal.email}`,
+            children: [
+              new TextRun({
+                text: `✉  ${personal.email}`,
+                font: "Calibri",
+                size: 18,
+                color: "93C5FD",
+                style: "Hyperlink",
+              }),
+            ],
+          }),
+        ],
+      }));
     }
     if (personal.github) {
       children.push(ltrParagraph({
         spacing: { after: 40 },
         children: [
           new ExternalHyperlink({
-            link: personal.github,
+            link: ensureProtocol(personal.github),
             children: [
               new TextRun({
-                text: personal.github.replace(/^https?:\/\//, ""),
+                text: `🔗  ${personal.github.replace(/^https?:\/\//, "")}`,
                 font: "Calibri",
                 size: 18,
                 color: "93C5FD",
@@ -124,10 +141,10 @@ function buildSidebarContent(personal, skills, languages, hiddenSections) {
         spacing: { after: 40 },
         children: [
           new ExternalHyperlink({
-            link: personal.linkedin,
+            link: ensureProtocol(personal.linkedin),
             children: [
               new TextRun({
-                text: personal.linkedin.replace(/^https?:\/\//, ""),
+                text: `🔗  ${personal.linkedin.replace(/^https?:\/\//, "")}`,
                 font: "Calibri",
                 size: 18,
                 color: "93C5FD",

@@ -6,6 +6,8 @@ import { generateDocx } from "../utils/generateDocx";
 import { FaGithub, FaLinkedin } from "react-icons/fa";
 import { formatYearRange } from "../components/cv/ItemModal";
 
+const ensureProtocol = (url) => /^https?:\/\//.test(url) ? url : `https://${url}`;
+
 const defaultCV = {
   personal: { name: "", phone: "", email: "", github: "", linkedin: "" },
   summary: "",
@@ -188,19 +190,19 @@ export default function CVPreview() {
                   </p>
                 )}
                 {personal.email && (
-                  <p className="text-xs text-slate-300 break-all flex items-center gap-2">
+                  <a href={`mailto:${personal.email}`} className="text-xs text-blue-300 break-all flex items-center gap-2" target="_blank" rel="noreferrer">
                     <LuMail className="w-3.5 h-3.5 flex-shrink-0" />
                     {personal.email}
-                  </p>
+                  </a>
                 )}
                 {personal.github && (
-                  <a href={personal.github} className="text-xs text-blue-300 break-all flex items-center gap-2" target="_blank" rel="noreferrer">
+                  <a href={ensureProtocol(personal.github)} className="text-xs text-blue-300 break-all flex items-center gap-2" target="_blank" rel="noreferrer">
                     <FaGithub className="w-3.5 h-3.5 flex-shrink-0" />
                     {personal.github.replace(/^https?:\/\//, "")}
                   </a>
                 )}
                 {personal.linkedin && (
-                  <a href={personal.linkedin} className="text-xs text-blue-300 break-all flex items-center gap-2" target="_blank" rel="noreferrer">
+                  <a href={ensureProtocol(personal.linkedin)} className="text-xs text-blue-300 break-all flex items-center gap-2" target="_blank" rel="noreferrer">
                     <FaLinkedin className="w-3.5 h-3.5 flex-shrink-0" />
                     {personal.linkedin.replace(/^https?:\/\//, "")}
                   </a>
