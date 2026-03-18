@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { LuPencil, LuPrinter, LuPhone, LuMail } from "react-icons/lu";
+import { LuPencil, LuPrinter, LuPhone, LuMail, LuFileText } from "react-icons/lu";
+import { generateDocx } from "../utils/generateDocx";
 import { FaGithub, FaLinkedin } from "react-icons/fa";
 import { formatYearRange } from "../components/cv/ItemModal";
 
@@ -121,6 +122,9 @@ export default function CVPreview() {
             <Link to="/editor">
               <Button variant="outline" className="gap-2"><LuPencil className="w-4 h-4" /> Edit</Button>
             </Link>
+            <Button variant="outline" className="gap-2" onClick={() => generateDocx(cv)}>
+              <LuFileText className="w-4 h-4" /> Save as Word
+            </Button>
             <Button className="gap-2" onClick={() => {
               const prev = document.title;
               const now = new Date();
