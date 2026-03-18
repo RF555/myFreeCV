@@ -8,6 +8,7 @@ const SCHEMA = [
   { key: "years", label: "Years", type: "yearRange" },
   { key: "title", label: "Job Title", type: "text", placeholder: "Software Engineer" },
   { key: "company", label: "Company", type: "text", placeholder: "Company Name" },
+  { key: "description", label: "Description (optional)", type: "textarea", placeholder: "Brief description..." },
   { key: "bullets", label: "Responsibilities / Achievements", type: "bullets" },
 ];
 
@@ -56,6 +57,9 @@ export default function ExperienceSection({ data, onChange }) {
                 <Button size="sm" variant="ghost" className="h-7 w-7 p-0 text-red-400 hover:text-red-600" onClick={() => remove(i)}><Trash2 className="w-3 h-3" /></Button>
               </div>
             </div>
+            {exp.description && (
+              <p className="text-xs text-gray-600 mt-2">{exp.description}</p>
+            )}
             {(exp.bullets || []).length > 0 && (
               <ul className="mt-2 space-y-0.5">
                 {exp.bullets.map((b, j) => (

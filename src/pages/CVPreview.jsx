@@ -68,7 +68,7 @@ export default function CVPreview() {
           <div key="experience" className="mb-6">
             <SectionHeader title="Experience" />
             {experience.map((exp, i) => (
-              <TimelineItem key={i} years={exp.years} primary={exp.title} secondary={exp.company} bullets={exp.bullets} />
+              <TimelineItem key={i} years={exp.years} primary={exp.title} secondary={exp.company} description={exp.description} bullets={exp.bullets} />
             ))}
           </div>
         ) : null;
@@ -78,7 +78,7 @@ export default function CVPreview() {
           <div key="education" className="mb-6">
             <SectionHeader title="Education" />
             {education.map((edu, i) => (
-              <TimelineItem key={i} years={edu.years} primary={edu.degree} secondary={edu.institution} />
+              <TimelineItem key={i} years={edu.years} primary={edu.degree} secondary={edu.institution} description={edu.description} bullets={edu.bullets} />
             ))}
           </div>
         ) : null;

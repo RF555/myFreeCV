@@ -8,6 +8,8 @@ const SCHEMA = [
   { key: "years", label: "Years", type: "yearRange" },
   { key: "degree", label: "Degree / Title", type: "text", placeholder: "Bachelor of Science" },
   { key: "institution", label: "Institution", type: "text", placeholder: "University Name" },
+  { key: "description", label: "Description (optional)", type: "textarea", placeholder: "Brief description..." },
+  { key: "bullets", label: "Bullet Points", type: "bullets" },
 ];
 
 export default function EducationSection({ data, onChange }) {
@@ -55,6 +57,19 @@ export default function EducationSection({ data, onChange }) {
                 <Button size="sm" variant="ghost" className="h-7 w-7 p-0 text-red-400 hover:text-red-600" onClick={() => remove(i)}><Trash2 className="w-3 h-3" /></Button>
               </div>
             </div>
+            {edu.description && (
+              <p className="text-xs text-gray-600 mt-2">{edu.description}</p>
+            )}
+            {(edu.bullets || []).length > 0 && (
+              <ul className="mt-2 space-y-0.5">
+                {edu.bullets.map((b, j) => (
+                  <li key={j} className="text-xs text-gray-600 flex gap-1.5">
+                    <span className="text-gray-400">•</span>
+                    <span>{b}</span>
+                  </li>
+                ))}
+              </ul>
+            )}
           </div>
         ))}
       </CardContent>
