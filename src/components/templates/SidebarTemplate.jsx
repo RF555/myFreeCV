@@ -51,16 +51,7 @@ export default function SidebarTemplate({ cv }) {
         ) : null;
 
       case "references":
-        return references?.length > 0 ? (
-          <div key="references" className="mb-6">
-            <CVSectionHeader title="References" variant="main" />
-            <div className="grid grid-cols-2 gap-4">
-              {references.map((ref, i) => (
-                <CVReferenceCard key={i} name={ref.name} title={ref.title} organization={ref.organization} phone={ref.phone} email={ref.email} />
-              ))}
-            </div>
-          </div>
-        ) : null;
+        return null;
 
       case "custom": {
         const cs = customSections?.[section.id];
@@ -111,9 +102,21 @@ export default function SidebarTemplate({ cv }) {
 
           {/* Languages */}
           {!hiddenSections?.languages && languages?.length > 0 && (
-            <div>
+            <div className="mb-6">
               <CVSectionHeader title="Languages" variant="sidebar" />
               <CVBulletList items={languages} variant="sidebar" />
+            </div>
+          )}
+
+          {/* References */}
+          {!hiddenSections?.references && references?.length > 0 && (
+            <div>
+              <CVSectionHeader title="References" variant="sidebar" />
+              <div className="space-y-3">
+                {references.map((ref, i) => (
+                  <CVReferenceCard key={i} name={ref.name} title={ref.title} organization={ref.organization} phone={ref.phone} email={ref.email} variant="sidebar" />
+                ))}
+              </div>
             </div>
           )}
         </div>
